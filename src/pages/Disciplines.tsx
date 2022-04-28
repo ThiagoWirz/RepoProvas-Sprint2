@@ -9,6 +9,7 @@ import {
   Link,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +27,25 @@ function Disciplines() {
   const { token } = useAuth();
   const [terms, setTerms] = useState<TestByDiscipline[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [searchInput, setSearchInput] = useState("");
+  const termsList = terms?.map((term) => term.disciplines);
+  const disciplinesName: string[] = [];
+  if (termsList) {
+    for (let terms of termsList) {
+      for (let discip of terms) {
+        disciplinesName.push(discip.name);
+      }
+    }
+  }
+  let filteredDisciplines: any[] = [];
+
+  if (searchInput) {
+    terms.forEach((term) => {
+      const filter = term.disciplines.filter((el) => el.name === searchInput);
+
+      if (filter.length !== 0) filteredDisciplines.push(filter[0]);
+    });
+  }
 
   useEffect(() => {
     async function loadPage() {
@@ -41,10 +61,21 @@ function Disciplines() {
 
   return (
     <>
-      <TextField
+      <Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={disciplinesName}
         sx={{ marginX: "auto", marginBottom: "25px", width: "450px" }}
-        label="Pesquise por disciplina"
+        onInputChange={(e, value) => setSearchInput(value)}
+        renderInput={(params: any) => (
+          <TextField
+            {...params}
+            sx={{ marginX: "auto", marginBottom: "25px", width: "450px" }}
+            label="Pesquise por disciplina"
+          />
+        )}
       />
+
       <Divider sx={{ marginBottom: "35px" }} />
       <Box
         sx={{
@@ -76,7 +107,14 @@ function Disciplines() {
             Adicionar
           </Button>
         </Box>
-        <TermsAccordions categories={categories} terms={terms} />
+        {!searchInput ? (
+          <TermsAccordions categories={categories} terms={terms} />
+        ) : (
+          <DisciplinesAccordions
+            categories={categories}
+            disciplines={filteredDisciplines}
+          />
+        )}
       </Box>
     </>
   );
