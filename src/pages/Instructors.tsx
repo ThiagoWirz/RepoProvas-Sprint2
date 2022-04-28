@@ -9,6 +9,7 @@ import {
   Link,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +28,10 @@ function Instructors() {
     TestByTeacher[]
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [teachers, setTeachers] = useState([]);
+  const teacherNames: string[] = [];
+  teachers.forEach((teacher: any) => teacherNames.push(teacher.name));
 
   useEffect(() => {
     async function loadPage() {
@@ -36,15 +41,27 @@ function Instructors() {
       setTeachersDisciplines(testsData.tests);
       const { data: categoriesData } = await api.getCategories(token);
       setCategories(categoriesData.categories);
+      const { data: teacherData } = await api.getTeachers(token);
+      setTeachers(teacherData.teachers);
     }
     loadPage();
   }, [token]);
 
   return (
     <>
-      <TextField
+      <Autocomplete
+        disablePortal
+        id="combo-box-demo"
+        options={teacherNames}
         sx={{ marginX: "auto", marginBottom: "25px", width: "450px" }}
-        label="Pesquise por pessoa instrutora"
+        onInputChange={(e, value) => setSearchInput(value)}
+        renderInput={(params: any) => (
+          <TextField
+            {...params}
+            sx={{ marginX: "auto", marginBottom: "25px", width: "450px" }}
+            label="Pesquise por pessoa instrutora"
+          />
+        )}
       />
       <Divider sx={{ marginBottom: "35px" }} />
       <Box
@@ -77,10 +94,19 @@ function Instructors() {
             Adicionar
           </Button>
         </Box>
-        <TeachersDisciplinesAccordions
-          categories={categories}
-          teachersDisciplines={teachersDisciplines}
-        />
+        {!searchInput ? (
+          <TeachersDisciplinesAccordions
+            categories={categories}
+            teachersDisciplines={teachersDisciplines}
+          />
+        ) : (
+          <TeachersDisciplinesAccordions
+            categories={categories}
+            teachersDisciplines={teachersDisciplines.filter(
+              (el) => el.teacher.name === searchInput
+            )}
+          />
+        )}
       </Box>
     </>
   );
