@@ -97,9 +97,19 @@ async function getTeachers(token: string) {
   return baseAPI.get("/teachers", config);
 }
 
-async function getDisciplineByCategory(category: string, token: string) {
+async function getDisciplines(token: string) {
   const config = getConfig(token);
-  return baseAPI.get(`/disciplines/${category}`, config);
+  return baseAPI.get(`/disciplines`, config);
+}
+
+async function getTeachersByDiscipline(discipline: string, token: string) {
+  const config = getConfig(token);
+  return baseAPI.get(`/teachers/${discipline}`, config);
+}
+
+async function addTest(body: any, token: string) {
+  const config = getConfig(token);
+  return baseAPI.post("/tests", body, config);
 }
 
 const api = {
@@ -109,6 +119,9 @@ const api = {
   getTestsByTeacher,
   getCategories,
   getTeachers,
+  getDisciplines,
+  getTeachersByDiscipline,
+  addTest,
 };
 
 export default api;

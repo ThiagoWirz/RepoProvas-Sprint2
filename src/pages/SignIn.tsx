@@ -73,7 +73,6 @@ function SignIn() {
       const {
         data: { token },
       } = await api.signIn({ email, password });
-      console.log(token);
       signIn(token);
       navigate("/app/disciplinas");
     } catch (error: Error | AxiosError | any) {
