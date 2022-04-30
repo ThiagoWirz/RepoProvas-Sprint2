@@ -97,6 +97,11 @@ async function getTeachers(token: string) {
   return baseAPI.get("/teachers", config);
 }
 
+async function getDisciplineByCategory(category: string, token: string) {
+  const config = getConfig(token);
+  return baseAPI.get(`/disciplines/${category}`, config);
+}
+
 const api = {
   signUp,
   signIn,
