@@ -248,20 +248,36 @@ function Tests({
   categoryId,
   testsWithTeachers: testsWithDisciplines,
 }: TestsProps) {
+  const { token } = useAuth();
+  async function updateView(id: number) {
+    if (!token) return;
+    await api.updateView(id, token);
+  }
+
   return (
     <>
       {testsWithDisciplines.map((testsWithDisciplines) =>
         testsWithDisciplines.tests
           .filter((test) => testOfCategory(test, categoryId))
           .map((test) => (
-            <Typography key={test.id} color="#878787">
-              <Link
-                href={test.pdfUrl}
-                target="_blank"
-                underline="none"
-                color="inherit"
-              >{`${test.name} (${testsWithDisciplines.teacherName})`}</Link>
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                gap: "30px",
+              }}
+            >
+              <Typography key={test.id} color="#878787">
+                <Link
+                  onClick={() => updateView(test.id)}
+                  href={test.pdfUrl}
+                  target="_blank"
+                  underline="none"
+                  color="inherit"
+                >{`${test.name} (${testsWithDisciplines.teacherName})`}</Link>
+              </Typography>
+              <Typography>{`Visualizações:  ${test.views}`}</Typography>
+            </Box>
           ))
       )}
     </>
