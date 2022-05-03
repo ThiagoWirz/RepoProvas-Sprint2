@@ -24,7 +24,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "CHOKIDAR_USEPOLLING=true react-scripts start -L",
+    "start": "FAST_REFRESH=false CHOKIDAR_USEPOLLING=true react-scripts start -L",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

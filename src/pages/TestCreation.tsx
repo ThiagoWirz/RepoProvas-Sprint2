@@ -28,7 +28,6 @@ function TestCreation() {
   });
   const { token } = useAuth();
   const { setMessage } = useAlert();
-  let reload = false;
 
   useEffect(() => {
     async function loadPage() {
@@ -55,7 +54,7 @@ function TestCreation() {
       });
     }
     loadPage();
-  }, [reload]);
+  }, []);
 
   function handleDropDownChange(field: string, value: string) {
     setFormData({ ...formData, [field]: value });
@@ -70,12 +69,11 @@ function TestCreation() {
 
     try {
       const response = await api.addTest(formData, token);
-      console.log(response);
       setMessage({
         type: "success",
         text: "Prova adicionada com sucesso!",
       });
-      reload = !reload;
+      navigate("/app/disciplinas");
     } catch (error: Error | AxiosError | any) {
       if (error.response) {
         setMessage({
@@ -94,12 +92,9 @@ function TestCreation() {
 
   async function handleDisciplineChange(value: string) {
     if (!token) return;
-    if (!value) {
-      setTeachers([]);
-      setFormData({ ...formData, teacherName: "" });
-      return;
-    }
-
+    setTeachers([]);
+    setFormData({ ...formData, teacherName: "" });
+    if (!value) return;
     const { data: teacherData } = await api.getTeachersByDiscipline(
       value,
       token
@@ -108,8 +103,6 @@ function TestCreation() {
     for (let teacher of teacherData.teachers) {
       teachersName.push(teacher.teacher.name);
     }
-    setTeachers([]);
-    setFormData({ ...formData, teacherName: "" });
     setTeachers(teachersName);
     handleDropDownChange("disciplineName", value);
   }
@@ -150,12 +143,15 @@ function TestCreation() {
             Disciplinas
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={() => navigate("/app/pessoas-instrutoras")}
           >
             Pessoa Instrutora
           </Button>
-          <Button variant="outlined" onClick={() => navigate("/app/adicionar")}>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/app/adicionar")}
+          >
             Adicionar
           </Button>
         </Box>
@@ -207,6 +203,7 @@ function TestCreation() {
               options={teachers}
               autoComplete={true}
               disabled={formData.disciplineName === ""}
+              value={formData.teacherName}
               onInputChange={(e, value) =>
                 handleDropDownChange("teacherName", value)
               }
