@@ -68,12 +68,19 @@ function TestCreation() {
     if (!token) return;
 
     try {
-      const response = await api.addTest(formData, token);
+      await api.addTest(formData, token);
       setMessage({
         type: "success",
         text: "Prova adicionada com sucesso!",
       });
-      navigate("/app/disciplinas");
+      setTeachers([]);
+      setFormData({
+        name: "",
+        pdfUrl: "",
+        categoryName: "",
+        disciplineName: "",
+        teacherName: "",
+      });
     } catch (error: Error | AxiosError | any) {
       if (error.response) {
         setMessage({
@@ -93,7 +100,7 @@ function TestCreation() {
   async function handleDisciplineChange(value: string) {
     if (!token) return;
     setTeachers([]);
-    setFormData({ ...formData, teacherName: "" });
+    setFormData({ ...formData, teacherName: "", disciplineName: value });
     if (!value) return;
     const { data: teacherData } = await api.getTeachersByDiscipline(
       value,
@@ -104,7 +111,6 @@ function TestCreation() {
       teachersName.push(teacher.teacher.name);
     }
     setTeachers(teachersName);
-    handleDropDownChange("disciplineName", value);
   }
 
   return (
@@ -170,6 +176,7 @@ function TestCreation() {
               type="text"
               label="Titulo da prova"
               onChange={handleInputChange}
+              value={formData.name}
             />
             <TextField
               fullWidth={true}
@@ -177,11 +184,13 @@ function TestCreation() {
               type="uri"
               label="PDF da prova"
               onChange={handleInputChange}
+              value={formData.pdfUrl}
             />
             <Autocomplete
               fullWidth={true}
               options={categories}
               autoComplete={true}
+              value={formData.categoryName}
               onInputChange={(e, value) =>
                 handleDropDownChange("categoryName", value)
               }
@@ -193,6 +202,7 @@ function TestCreation() {
               fullWidth={true}
               options={disciplines}
               autoComplete={true}
+              value={formData.disciplineName}
               onInputChange={(e, value) => handleDisciplineChange(value)}
               renderInput={(params) => (
                 <TextField {...params} label="Disciplina" />
@@ -202,7 +212,7 @@ function TestCreation() {
               fullWidth={true}
               options={teachers}
               autoComplete={true}
-              disabled={formData.disciplineName === ""}
+              // disabled={formData.disciplineName === ""}
               value={formData.teacherName}
               onInputChange={(e, value) =>
                 handleDropDownChange("teacherName", value)
